@@ -3858,6 +3858,7 @@ static void poly_mult_schoolbook(uint32_t* pC, uint32_t* pA, uint32_t* pB, size_
     }
 }
 
+
 void poly_mult_karatsuba(uint32_t* pC, uint32_t* pA, uint32_t* pB, size_t n, size_t recursions)
 {
     const size_t n0 = n>>0;
