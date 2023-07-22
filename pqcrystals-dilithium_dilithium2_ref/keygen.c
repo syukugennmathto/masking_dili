@@ -42,6 +42,15 @@ int crypto_sign_keygen(uint8_t *pk, uint8_t *sk) {
   polyvecl_uniform_eta(&s1, rhoprime, 0);
   polyveck_uniform_eta(&s2, rhoprime, L);
 
+  // mask the s1 and s2 vectors with small_bounded_noise_generation_256
+  unsigned char nonce = 0;
+  for (uint32_t i = 0; i < L; ++i) 
+    small_bounded_noise_generation_256(&s1.vec[i].coeffs, rhoprime, nonce++);
+  nonce = 0;
+  for (uint32_t i = 0; i < K; ++i) 
+    small_bounded_noise_generation_256(&s2.vec[i].coeffs, rhoprime, nonce++);
+
+  
   /* Matrix-vector multiplication */
   s1hat = s1;
   polyvecl_ntt(&s1hat);
