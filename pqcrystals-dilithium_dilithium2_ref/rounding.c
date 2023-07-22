@@ -106,24 +106,31 @@ unsigned int make_hint(int32_t a0, int32_t a1) {
 * Returns corrected high bits.
 **************************************************/
 int32_t use_hint(int32_t a, unsigned int hint) {
-  int32_t a0, a1;
+    int32_t a0, a1;
 
-  a1 = decompose(&a0, a);
-  if(hint == 0)
-    return a1;
+    // コード2のdecompose関数を呼び出してa0とa1を計算
+    a1 = decompose(&a0, a);
 
+    if (hint == 1) {
+        // hintが1の場合、条件によってa1を調整
 #if GAMMA2 == (Q-1)/32
-  if(a0 > 0)
-    return (a1 + 1) & 15;
-  else
-    return (a1 - 1) & 15;
+        if (a0 > 0) {
+            a1 = (a1 + 1) & 15;
+        } else {
+            a1 = (a1 - 1) & 15;
+        }
 #elif GAMMA2 == (Q-1)/88
-  if(a0 > 0)
-    return (a1 == 43) ?  0 : a1 + 1;
-  else
-    return (a1 ==  0) ? 43 : a1 - 1;
+        if (a0 > 0) {
+            a1 = (a1 == 43) ?  0 : a1 + 1;
+        } else {
+            a1 = (a1 ==  0) ? 43 : a1 - 1;
+        }
 #endif
+    }
+
+    return a1;
 }
+
 
 
 /*************************************************
