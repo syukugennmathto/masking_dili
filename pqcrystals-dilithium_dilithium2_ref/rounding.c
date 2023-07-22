@@ -76,11 +76,24 @@ int32_t decompose(int32_t *a0, int32_t a) {
 * Returns 1 if overflow.
 **************************************************/
 unsigned int make_hint(int32_t a0, int32_t a1) {
-  if(a0 > GAMMA2 || a0 < -GAMMA2 || (a0 == -GAMMA2 && a1 != 0))
-    return 1;
+    uint32_t base = 7; // 仮にbaseを7とします。実際の値に合わせて変更してください。
 
-  return 0;
+    uint32_t r1, v1;
+    uint32_t mask = (1 << base) - 1;
+    uint32_t d_1 = (mask >> 1) + 1;
+    uint32_t a0_unsigned = (uint32_t)a0;
+    uint32_t a1_unsigned = (uint32_t)a1;
+
+    highbits(&r1, a0_unsigned, base);
+    highbits(&v1, a0_unsigned + a1_unsigned, base);
+
+    if (r1 == v1) {
+        return 0;
+    } else {
+        return 1;
+    }
 }
+
 
 /*************************************************
 * Name:        use_hint
