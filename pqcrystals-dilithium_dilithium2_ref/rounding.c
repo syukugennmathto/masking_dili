@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdint.h>
 #include "params.h"
 #include "rounding.h"
@@ -76,16 +77,15 @@ int32_t decompose(int32_t *a0, int32_t a) {
 * Returns 1 if overflow.
 **************************************************/
 unsigned int make_hint(int32_t a0, int32_t a1) {
-    uint32_t base = 7; // 仮にbaseを7とします。実際の値に合わせて変更してください。
-
+    
     uint32_t r1, v1;
-    uint32_t mask = (1 << base) - 1;
+    uint32_t mask = (1 << D) - 1;
     uint32_t d_1 = (mask >> 1) + 1;
     uint32_t a0_unsigned = (uint32_t)a0;
     uint32_t a1_unsigned = (uint32_t)a1;
 
-    highbits(&r1, a0_unsigned, base);
-    highbits(&v1, a0_unsigned + a1_unsigned, base);
+    highbits(&r1, a0_unsigned, D);
+    highbits(&v1, a0_unsigned + a1_unsigned, D);
 
     if (r1 == v1) {
         return 0;
@@ -123,4 +123,21 @@ int32_t use_hint(int32_t a, unsigned int hint) {
   else
     return (a1 ==  0) ? 43 : a1 - 1;
 #endif
+}
+
+
+/*************************************************
+* Name:        highbits
+*
+* Description: Compute the high bits of a finite field element `r` given a base value.
+*              The base value determines the number of bits to shift the element `r` to the right.
+*
+* Arguments:   - uint32_t *r1: pointer to the output high bits of `r`
+*              - uint32_t r: input element
+*              - uint32_t base: base value used for shifting `r`
+**************************************************/
+void highbits(uint32_t *r1, uint32_t r, uint32_t base) {
+    uint32_t mask = (1 << base) - 1;
+    uint32_t d_1 = (mask >> 1) + 1;
+    *r1 = (r + d_1) >> base;
 }
