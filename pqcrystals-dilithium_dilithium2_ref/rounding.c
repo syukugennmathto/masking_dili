@@ -37,20 +37,31 @@ int32_t power2round(int32_t *a0, int32_t a)  {
 * Returns a1.
 **************************************************/
 int32_t decompose(int32_t *a0, int32_t a) {
-  int32_t a1;
+    uint32_t mask = (1 << base) - 1;
+    uint32_t d_1 = (mask >> 1) + 1;
+    uint32_t a0_unsigned, a1_unsigned;
 
-  a1  = (a + 127) >> 7;
+    // Convert to unsigned 32-bit integers for intermediate calculations
+    uint32_t a_unsigned = (uint32_t)a;
+
+    // Calculate a1 and a0 in unsigned format
+    a1_unsigned = (a_unsigned + 127) >> 7;
 #if GAMMA2 == (Q-1)/32
-  a1  = (a1*1025 + (1 << 21)) >> 22;
-  a1 &= 15;
+    a1_unsigned = (a1_unsigned * 1025 + (1 << 21)) >> 22;
+    a1_unsigned &= 15;
 #elif GAMMA2 == (Q-1)/88
-  a1  = (a1*11275 + (1 << 23)) >> 24;
-  a1 ^= ((43 - a1) >> 31) & a1;
+    a1_unsigned = (a1_unsigned * 11275 + (1 << 23)) >> 24;
+    a1_unsigned ^= ((43 - a1_unsigned) >> 31) & a1_unsigned;
 #endif
 
-  *a0  = a - a1*2*GAMMA2;
-  *a0 -= (((Q-1)/2 - *a0) >> 31) & Q;
-  return a1;
+    a0_unsigned = a_unsigned - a1_unsigned * 2 * GAMMA2;
+    a0_unsigned -= (((Q - 1) / 2 - a0_unsigned) >> 31) & Q;
+
+    // Convert back to signed 32-bit integer format
+    *a0 = (int32_t)a0_unsigned;
+
+    // Convert a1 back to signed 32-bit integer format and return it
+    return (int32_t)a1_unsigned;
 }
 
 /*************************************************
